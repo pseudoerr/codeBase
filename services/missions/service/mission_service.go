@@ -31,8 +31,8 @@ type MissionService struct {
 func NewInMemoryStore() *InMemoryStore {
 	return &InMemoryStore{
 		missions: []models.Mission{
-			{ID: 1, Title: "Hello, World!", Points: 100},
-			{ID: 2, Title: "FizzBuzz", Points: 200},
+			{ID: "1", Title: "Hello, World!", Points: 100},
+			{ID: "2", Title: "FizzBuzz", Points: 200},
 		},
 		nextID: 3,
 	}

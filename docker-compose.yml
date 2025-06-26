@@ -1,0 +1,79 @@
+version: '3.8'
+
+services:
+  auth-db:
+    image: postgres:15-alpine
+    container_name: auth-db
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: auth
+    ports:
+      - "5437:5432"
+    volumes:
+      - auth_db_data:/var/lib/postgresql/data
+    networks:
+      - codebase-network
+
+  auth-service:
+    build:
+      context: ./auth-service
+    container_name: auth-service
+    environment:
+      PORT: 8081
+      DATABASE_URL: postgres://postgres:auth@auth-db:5432/postgres?sslmode=disable
+      JWT_SECRET: your-super-secret-jwt-key-change-in-production
+      JWT_ACCESS_TTL: 15m
+      JWT_REFRESH_TTL: 168h
+      BCRYPT_COST: 12
+    ports:
+      - "8081:8081"
+    depends_on:
+      - auth-db
+      - auth-redis
+    networks:
+      - codebase-network
+
+  auth-redis:
+    image: redis:7-alpine
+    container_name: auth-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - codebase-network
+
+  missions-db:
+    image: postgres:15-alpine
+    container_name: missions-db
+    environment:
+      POSTGRES_DB: missions
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: missions
+    ports:
+      - "5438:5432"
+    volumes:
+      - missions_db_data:/var/lib/postgresql/data
+    networks:
+      - codebase-network
+
+  missions-service:
+    build:
+      context: ./missions-service
+    container_name: missions-service
+    environment:
+      PORT: 8080
+      DATABASE_URL: postgres://postgres:missions@missions-db:5432/missions?sslmode=disable
+    ports:
+      - "8080:8080"
+    depends_on:
+      - missions-db
+    networks:
+      - codebase-network
+
+volumes:
+  auth_db_data:
+  missions_db_data:
+
+networks:
+  codebase-network:
+    driver: bridge
