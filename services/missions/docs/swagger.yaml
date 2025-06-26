@@ -1,0 +1,179 @@
+definitions:
+  models.Mission:
+    properties:
+      id:
+        type: integer
+      points:
+        type: integer
+      title:
+        type: string
+    type: object
+  models.Profile:
+    properties:
+      achievements:
+        items:
+          type: string
+        type: array
+      level:
+        type: string
+      total_points:
+        type: integer
+    type: object
+info:
+  contact: {}
+paths:
+  /missions:
+    get:
+      description: Возвращает список всех заданий
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Mission'
+            type: array
+        "500":
+          description: Failed to list missions
+          schema:
+            type: string
+        "504":
+          description: Request timeout
+          schema:
+            type: string
+      summary: Получить все задания
+      tags:
+      - missions
+    post:
+      consumes:
+      - application/json
+      description: Добавляет новое задание в систему
+      parameters:
+      - description: Новое задание
+        in: body
+        name: mission
+        required: true
+        schema:
+          $ref: '#/definitions/models.Mission'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Mission'
+        "400":
+          description: Invalid request
+          schema:
+            type: string
+        "500":
+          description: Failed to create mission
+          schema:
+            type: string
+      summary: Создать новое задание
+      tags:
+      - missions
+  /missions/{id}:
+    delete:
+      description: Удаляет задание по ID
+      parameters:
+      - description: ID задания
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No Content
+          schema:
+            type: string
+        "400":
+          description: Invalid ID
+          schema:
+            type: string
+        "500":
+          description: Failed to delete mission
+          schema:
+            type: string
+      summary: Удалить задание
+      tags:
+      - missions
+    get:
+      description: Возвращает одно задание по его идентификатору
+      parameters:
+      - description: ID задания
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Mission'
+        "400":
+          description: Invalid ID
+          schema:
+            type: string
+        "404":
+          description: Not found
+          schema:
+            type: string
+      summary: Получить задание по ID
+      tags:
+      - missions
+    put:
+      consumes:
+      - application/json
+      description: Обновляет существующее задание по ID
+      parameters:
+      - description: ID задания
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Обновленные данные
+        in: body
+        name: mission
+        required: true
+        schema:
+          $ref: '#/definitions/models.Mission'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Mission'
+        "400":
+          description: Invalid ID or request
+          schema:
+            type: string
+        "500":
+          description: Failed to update mission
+          schema:
+            type: string
+      summary: Обновить задание
+      tags:
+      - missions
+  /profile:
+    get:
+      description: Возвращает профиль текущего пользователя/сервиса
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Profile'
+        "500":
+          description: Failed to get profile
+          schema:
+            type: string
+      summary: Получить профиль
+      tags:
+      - profile
+swagger: "2.0"
